@@ -1,84 +1,3 @@
-const DEFAULT_TIMEOUT = 1200;
-const DEFAULT_CONCURRENCY = 100;
-
-function withTimeout(promise, timeout) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => {
-      setTimeout(() => {
-        reject(new Error("TIMEOUT"));
-      }, timeout);
-    })
-  ]);
-}
-
-async function scanUrl(url, timeout) {
-  const started = Date.now();
-
-  try {
-    const response = await withTimeout(
-      fetch(url, {
-        method: "GET",
-        redirect: "follow",
-        headers: {
-          "User-Agent": "FFVN-TGM-Scanner/1.0"
-        }
-      }),
-      timeout
-    );
-
-    return {
-      url,
-      status: response.ok
-        ? "ONLINE"
-        : `HTTP ${response.status}`,
-      code: response.status,
-      time: Date.now() - started
-    };
-
-  } catch (error) {
-    return {
-      url,
-      status: error.message === "TIMEOUT"
-        ? "TIMEOUT"
-        : "ERROR",
-      code: 0,
-      time: Date.now() - started
-    };
-  }
-}
-
-async function runConcurrent(urls, concurrency, timeout) {
-  const results = new Array(urls.length);
-  let nextIndex = 0;
-
-  async function worker() {
-    while (true) {
-      const index = nextIndex++;
-
-      if (index >= urls.length) {
-        return;
-      }
-
-      results[index] = await scanUrl(
-        urls[index],
-        timeout
-      );
-    }
-  }
-
-  const workers = Math.min(concurrency, urls.length);
-
-  await Promise.all(
-    Array.from(
-      { length: workers },
-      () => worker()
-    )
-  );
-
-  return results;
-}
-
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -89,6 +8,10 @@ export default async function handler(req, res) {
     "Access-Control-Allow-Headers",
     "Content-Type"
   );
+  res.setHeader(
+    "Cache-Control",
+    "no-store"
+  );
 
   if (req.method === "OPTIONS") {
     return res.status(204).end();
@@ -97,72 +20,184 @@ export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
-      error: "METHOD_NOT_ALLOWED"
+      error: "Method Not Allowed"
     });
   }
 
   try {
-    const body = req.body || {};
+    const body =
+      typeof req.body === "string"
+        ? JSON.parse(req.body || "{}")
+        : (req.body || {});
+
+    const tasks = Array.isArray(body.tasks)
+      ? body.tasks
+      : [];
 
     const timeout = Math.min(
       Math.max(
-        Number(body.timeout) || DEFAULT_TIMEOUT,
-        100
+        Number(body.timeout) || 1200,
+        300
       ),
-      5000
+      3000
     );
 
+    // 50 worker đồng thời
     const concurrency = Math.min(
       Math.max(
-        Number(body.concurrency) || DEFAULT_CONCURRENCY,
+        Number(body.concurrency) || 50,
         1
       ),
-      100
+      50
     );
 
-    /*
-     * Danh sách URL có thể truyền từ frontend:
-     *
-     * {
-     *   "urls": [
-     *      "https://example.com",
-     *      "https://example.org"
-     *   ]
-     * }
-     *
-     * Nếu không truyền urls thì trả về mảng rỗng.
-     */
-    const urls = Array.isArray(body.urls)
-      ? body.urls
-          .filter(
-            url =>
-              typeof url === "string" &&
-              /^https?:\/\//i.test(url)
-          )
-          .slice(0, 10000)
-      : [];
+    if (!tasks.length) {
+      return res.status(400).json({
+        success: false,
+        error: "No scan tasks supplied",
+        assets: []
+      });
+    }
 
-    const results = await runConcurrent(
-      urls,
-      concurrency,
-      timeout
+    /*
+      Frontend gửi 100 task mỗi request.
+      API xử lý tối đa 50 request đồng thời.
+    */
+    const cleanTasks = tasks
+      .filter(
+        t =>
+          t &&
+          typeof t.url === "string" &&
+          /^https?:\/\//i.test(t.url)
+      )
+      .slice(0, 100);
+
+    const assets = [];
+
+    let cursor = 0;
+
+    async function scanOne(task) {
+      const controller =
+        new AbortController();
+
+      const timer =
+        setTimeout(
+          () => controller.abort(),
+          timeout
+        );
+
+      try {
+
+        const response =
+          await fetch(
+            task.url,
+            {
+              method: "GET",
+              redirect: "follow",
+              signal:
+                controller.signal,
+
+              headers: {
+                "User-Agent":
+                  "FFVN-TGM-Scanner/1.0",
+
+                "Accept":
+                  "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
+              }
+            }
+          );
+
+        if (response.ok) {
+
+          assets.push({
+            url: task.url,
+            fname: task.fname || "",
+            grp: task.grp || "",
+            type: task.type || "",
+            pre: task.pre || "",
+            status: response.status
+          });
+
+        }
+
+      } catch (_) {
+
+        // Resource không tồn tại / timeout
+        // sẽ không được trả về.
+
+      } finally {
+
+        clearTimeout(timer);
+
+      }
+    }
+
+    async function worker() {
+
+      while (true) {
+
+        const index =
+          cursor++;
+
+        if (
+          index >=
+          cleanTasks.length
+        ) {
+          return;
+        }
+
+        await scanOne(
+          cleanTasks[index]
+        );
+      }
+    }
+
+    await Promise.all(
+      Array.from(
+        {
+          length:
+            Math.min(
+              concurrency,
+              cleanTasks.length
+            )
+        },
+        () => worker()
+      )
     );
 
     return res.status(200).json({
       success: true,
-      total: urls.length,
+
+      total:
+        cleanTasks.length,
+
+      scanned:
+        cleanTasks.length,
+
+      found:
+        assets.length,
+
       concurrency,
+
       timeout,
-      results
+
+      assets
     });
 
   } catch (error) {
-    console.error(error);
 
     return res.status(500).json({
       success: false,
-      error: "SCAN_FAILED",
-      message: error.message
+
+      error:
+        "Scan API failed",
+
+      message:
+        error?.message ||
+        "Unknown error",
+
+      assets: []
     });
+
   }
 }
