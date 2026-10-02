@@ -1,212 +1,168 @@
-export default async function handler(req,res){
+const DEFAULT_TIMEOUT = 1200;
+const DEFAULT_CONCURRENCY = 100;
 
-    res.setHeader(
-        "Access-Control-Allow-Origin",
-        "*"
+function withTimeout(promise, timeout) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error("TIMEOUT"));
+      }, timeout);
+    })
+  ]);
+}
+
+async function scanUrl(url, timeout) {
+  const started = Date.now();
+
+  try {
+    const response = await withTimeout(
+      fetch(url, {
+        method: "GET",
+        redirect: "follow",
+        headers: {
+          "User-Agent": "FFVN-TGM-Scanner/1.0"
+        }
+      }),
+      timeout
     );
 
-    res.setHeader(
-        "Access-Control-Allow-Methods",
-        "POST, OPTIONS"
+    return {
+      url,
+      status: response.ok
+        ? "ONLINE"
+        : `HTTP ${response.status}`,
+      code: response.status,
+      time: Date.now() - started
+    };
+
+  } catch (error) {
+    return {
+      url,
+      status: error.message === "TIMEOUT"
+        ? "TIMEOUT"
+        : "ERROR",
+      code: 0,
+      time: Date.now() - started
+    };
+  }
+}
+
+async function runConcurrent(urls, concurrency, timeout) {
+  const results = new Array(urls.length);
+  let nextIndex = 0;
+
+  async function worker() {
+    while (true) {
+      const index = nextIndex++;
+
+      if (index >= urls.length) {
+        return;
+      }
+
+      results[index] = await scanUrl(
+        urls[index],
+        timeout
+      );
+    }
+  }
+
+  const workers = Math.min(concurrency, urls.length);
+
+  await Promise.all(
+    Array.from(
+      { length: workers },
+      () => worker()
+    )
+  );
+
+  return results;
+}
+
+export default async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "POST, OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type"
+  );
+
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
+  }
+
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      success: false,
+      error: "METHOD_NOT_ALLOWED"
+    });
+  }
+
+  try {
+    const body = req.body || {};
+
+    const timeout = Math.min(
+      Math.max(
+        Number(body.timeout) || DEFAULT_TIMEOUT,
+        100
+      ),
+      5000
     );
 
-    res.setHeader(
-        "Access-Control-Allow-Headers",
-        "Content-Type"
+    const concurrency = Math.min(
+      Math.max(
+        Number(body.concurrency) || DEFAULT_CONCURRENCY,
+        1
+      ),
+      100
     );
 
-    if(req.method==="OPTIONS"){
-        return res.status(200).end();
-    }
+    /*
+     * Danh sách URL có thể truyền từ frontend:
+     *
+     * {
+     *   "urls": [
+     *      "https://example.com",
+     *      "https://example.org"
+     *   ]
+     * }
+     *
+     * Nếu không truyền urls thì trả về mảng rỗng.
+     */
+    const urls = Array.isArray(body.urls)
+      ? body.urls
+          .filter(
+            url =>
+              typeof url === "string" &&
+              /^https?:\/\//i.test(url)
+          )
+          .slice(0, 10000)
+      : [];
 
-    if(req.method!=="POST"){
-        return res.status(405).json({
-            success:false,
-            error:"METHOD_NOT_ALLOWED"
-        });
-    }
+    const results = await runConcurrent(
+      urls,
+      concurrency,
+      timeout
+    );
 
-    try{
+    return res.status(200).json({
+      success: true,
+      total: urls.length,
+      concurrency,
+      timeout,
+      results
+    });
 
-        const body=req.body||{};
+  } catch (error) {
+    console.error(error);
 
-        if(!Array.isArray(body.urls)){
-            return res.status(400).json({
-                success:false,
-                error:"URL_LIST_EMPTY"
-            });
-        }
-
-        const urls=[
-            ...new Set(
-                body.urls
-                .filter(
-                    url=>
-                        typeof url==="string" &&
-                        /^https?:\/\//i.test(url)
-                )
-            )
-        ].slice(0,5000);
-
-        if(!urls.length){
-            return res.status(400).json({
-                success:false,
-                error:"URL_LIST_EMPTY"
-            });
-        }
-
-        const MAX_WORKERS=50;
-        const TIMEOUT=1200;
-
-        const results=
-            new Array(urls.length);
-
-        let cursor=0;
-
-        async function check(url){
-
-            const controller=
-                new AbortController();
-
-            const timer=
-                setTimeout(
-                    ()=>controller.abort(),
-                    TIMEOUT
-                );
-
-            try{
-
-                let response;
-
-                try{
-
-                    response=
-                        await fetch(
-                            url,
-                            {
-                                method:"HEAD",
-                                redirect:"follow",
-                                signal:
-                                    controller.signal
-                            }
-                        );
-
-                }catch{
-
-                    response=
-                        await fetch(
-                            url,
-                            {
-                                method:"GET",
-                                redirect:"follow",
-                                signal:
-                                    controller.signal,
-                                headers:{
-                                    Range:"bytes=0-0"
-                                }
-                            }
-                        );
-                }
-
-                return {
-                    url,
-                    found:response.ok,
-                    status:response.status
-                };
-
-            }catch(error){
-
-                return {
-                    url,
-                    found:false,
-                    status:0,
-                    error:
-                        error?.name==="AbortError"
-                            ?"TIMEOUT"
-                            :"REQUEST_FAILED"
-                };
-
-            }finally{
-
-                clearTimeout(timer);
-
-            }
-        }
-
-
-        async function worker(){
-
-            while(true){
-
-                const index=cursor++;
-
-                if(index>=urls.length){
-                    return;
-                }
-
-                results[index]=
-                    await check(
-                        urls[index]
-                    );
-            }
-        }
-
-
-        const workerCount=
-            Math.min(
-                MAX_WORKERS,
-                urls.length
-            );
-
-        await Promise.all(
-            Array.from(
-                {length:workerCount},
-                worker
-            )
-        );
-
-
-        const found=
-            results.filter(
-                x=>x&&x.found
-            );
-
-        return res.status(200).json({
-
-            success:true,
-
-            total:urls.length,
-
-            found:found.length,
-
-            failed:
-                urls.length-found.length,
-
-            workers:workerCount,
-
-            timeout:TIMEOUT,
-
-            results:found
-
-        });
-
-    }catch(error){
-
-        console.error(
-            "SCAN ERROR",
-            error
-        );
-
-        return res.status(500).json({
-
-            success:false,
-
-            error:"SCAN_FAILED",
-
-            message:
-                error?.message||
-                "Unknown error"
-
-        });
-    }
+    return res.status(500).json({
+      success: false,
+      error: "SCAN_FAILED",
+      message: error.message
+    });
+  }
 }
