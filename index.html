@@ -1,861 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<meta name="theme-color" content="#050505">
-<title>FAWAD Gaming (FF DATAMINER)</title>
-
-<style>
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:#050505;color:#fff}
-body{
-    font-family:Arial,Helvetica,sans-serif;
-    background:
-        radial-gradient(circle at 50% 0%,rgba(255,0,0,.16),transparent 38%),
-        linear-gradient(180deg,#090909,#020202);
-}
-button,input,select{font:inherit}
-button{cursor:pointer}
-
-.app{
-    width:min(1250px,100%);
-    margin:auto;
-    padding:16px;
-}
-
-.header{
-    background:rgba(12,12,12,.92);
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:20px;
-    padding:20px;
-    box-shadow:0 0 35px rgba(255,0,0,.08);
-}
-
-.logo{
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
-
-.logoIcon{
-    width:48px;
-    height:48px;
-    border-radius:14px;
-    display:grid;
-    place-items:center;
-    background:#e60000;
-    font-weight:900;
-    box-shadow:0 0 25px rgba(255,0,0,.45);
-}
-
-h1{
-    margin:0;
-    font-size:23px;
-}
-
-.sub{
-    margin-top:4px;
-    color:#777;
-    font-size:12px;
-}
-
-.controls{
-    display:grid;
-    grid-template-columns:1fr 170px;
-    gap:10px;
-    margin-top:18px;
-}
-
-input,select{
-    width:100%;
-    height:46px;
-    padding:0 14px;
-    border-radius:12px;
-    border:1px solid #222;
-    outline:none;
-    background:#111;
-    color:#fff;
-}
-
-input:focus,select:focus{
-    border-color:#e60000;
-}
-
-.filters{
-    display:flex;
-    gap:7px;
-    overflow-x:auto;
-    margin-top:12px;
-    scrollbar-width:none;
-}
-
-.filters::-webkit-scrollbar{display:none}
-
-.filter{
-    flex:0 0 auto;
-    padding:9px 14px;
-    border-radius:999px;
-    background:#111;
-    color:#999;
-    border:1px solid #222;
-}
-
-.filter.active{
-    background:#e60000;
-    border-color:#e60000;
-    color:#fff;
-}
-
-.actions{
-    display:flex;
-    gap:8px;
-    margin-top:13px;
-}
-
-.btn{
-    height:44px;
-    padding:0 18px;
-    border-radius:11px;
-    border:1px solid #222;
-    background:#151515;
-    color:#fff;
-    font-weight:800;
-}
-
-.btn.primary{
-    background:#e60000;
-    border-color:#e60000;
-}
-
-.btn.stop{
-    display:none;
-    background:#fff;
-    color:#000;
-}
-
-.status{
-    margin-top:13px;
-    padding:13px;
-    border-radius:13px;
-    background:#0d0d0d;
-    border:1px solid #1b1b1b;
-}
-
-.statusRow{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-#statusTxt{
-    color:#aaa;
-    font-size:13px;
-}
-
-#foundCount{
-    font-weight:900;
-}
-
-.scan-animation-container{
-    display:none;
-    height:30px;
-    position:relative;
-    align-items:center;
-    justify-content:center;
-}
-
-.bouncing-ball{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#e60000;
-    box-shadow:0 0 12px #e60000;
-    animation:bounce .6s infinite alternate;
-}
-
-@keyframes bounce{
-    from{transform:translateX(-80px)}
-    to{transform:translateX(80px)}
-}
-
-.progress-bar{
-    display:none;
-    width:100%;
-    height:4px;
-    background:#252525;
-    border-radius:99px;
-    overflow:hidden;
-}
-
-.progress-fill{
-    width:0;
-    height:100%;
-    background:#e60000;
-    box-shadow:0 0 12px #e60000;
-}
-
-.results{
-    margin-top:18px;
-}
-
-.resultsHead{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:12px;
-}
-
-.resultsHead h2{
-    margin:0;
-    font-size:17px;
-}
-
-.resultsHead span{
-    color:#666;
-    font-size:12px;
-}
-
-.grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:12px;
-}
-
-.card{
-    overflow:hidden;
-    background:#0c0c0c;
-    border:1px solid #191919;
-    border-radius:14px;
-}
-
-.card img{
-    display:block;
-    width:100%;
-    aspect-ratio:16/9;
-    object-fit:cover;
-    background:#111;
-}
-
-.cardBody{
-    padding:10px;
-}
-
-.name{
-    font-size:12px;
-    font-weight:800;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-}
-
-.url{
-    color:#555;
-    font-size:9px;
-    margin-top:5px;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-}
-
-.copy{
-    width:100%;
-    height:31px;
-    margin-top:8px;
-    border:1px solid #222;
-    background:#151515;
-    color:#fff;
-    border-radius:8px;
-    font-size:11px;
-}
-
-.empty{
-    grid-column:1/-1;
-    padding:40px 20px;
-    text-align:center;
-    color:#666;
-    border:1px dashed #222;
-    border-radius:14px;
-}
-
-.empty b{
-    display:block;
-    color:#aaa;
-    margin-bottom:5px;
-}
-
-@media(max-width:850px){
-    .grid{grid-template-columns:repeat(3,1fr)}
-}
-
-@media(max-width:600px){
-    .app{padding:10px}
-    .controls{grid-template-columns:1fr}
-    .grid{grid-template-columns:repeat(2,1fr);gap:8px}
-    h1{font-size:19px}
-}
-
-@media(max-width:360px){
-    .grid{grid-template-columns:1fr}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FREE FIRE EVENT & UPDATE 🔥</title>
 </head>
-
 <body>
 
-<div class="app">
+  <h1>FREE FIRE EVENT & UPDATE 🔥</h1>
 
-<section class="header">
+  <div id="scanStatus">Sẵn sàng quét</div>
+  <div id="progress">0%</div>
 
-    <div class="logo">
-        <div class="logoIcon">FF</div>
-        <div>
-            <h1>FAWAD Gaming</h1>
-            <div class="sub">FF DATAMINER</div>
-        </div>
-    </div>
+  <button id="scanBtn">BẮT ĐẦU QUÉT</button>
 
-    <div class="controls">
-        <input
-            id="searchInput"
-            placeholder="Search asset..."
-            autocomplete="off">
+  <div id="results"></div>
 
-        <select id="regionSelect">
-            <option value="IND">IND</option>
-            <option value="BD">BD</option>
-            <option value="SG">SG</option>
-            <option value="PK">PK</option>
-            <option value="EU">EU</option>
-            <option value="NA">NA</option>
-        </select>
-    </div>
+  <script>
+    const scanBtn = document.getElementById("scanBtn");
+    const scanStatus = document.getElementById("scanStatus");
+    const progress = document.getElementById("progress");
+    const results = document.getElementById("results");
 
-    <div class="filters">
-        <button class="filter active" data-group="ALL">ALL</button>
-        <button class="filter" data-group="TW">TW</button>
-        <button class="filter" data-group="DW">DW</button>
-        <button class="filter" data-group="FW">FW</button>
-        <button class="filter" data-group="MOCO">MOCO</button>
-        <button class="filter" data-group="TT">TT</button>
-        <button class="filter" data-group="ROYALE">ROYALE</button>
-        <button class="filter" data-group="TOPUP">TOPUP</button>
-        <button class="filter" data-group="STORE">STORE</button>
-    </div>
+    let scanning = false;
 
-    <div class="actions">
-        <button id="scanBtn" class="btn primary">START SCAN</button>
-        <button id="cancelBtn" class="btn stop">STOP</button>
-    </div>
-
-    <div class="status">
-
-        <div class="statusRow">
-            <div id="statusTxt">Ready to scan</div>
-            <div id="foundCount">0</div>
-        </div>
-
-        <div
-            id="scanAnim"
-            class="scan-animation-container">
-            <div class="bouncing-ball"></div>
-        </div>
-
-        <div
-            id="pBar"
-            class="progress-bar">
-            <div
-                id="pFill"
-                class="progress-fill">
-            </div>
-        </div>
-
-    </div>
-
-</section>
-
-
-<section class="results">
-
-    <div class="resultsHead">
-        <h2>SCAN RESULTS</h2>
-        <span id="resultInfo">0 assets</span>
-    </div>
-
-    <div id="resultsGrid" class="grid">
-        <div class="empty">
-            <b>No assets found</b>
-            Start a scan to search Free Fire assets.
-        </div>
-    </div>
-
-</section>
-
-</div>
-
-
-<script>
-"use strict";
-
-const API_SCAN="/api/scan";
-
-const regions=[
-    "IND","BD","SG","PK","EU","NA"
-];
-
-const suffixes=[
-    "en.jpg",
-    "en.png",
-    "ru.jpg"
-];
-
-const dateCodes=[
-    "26S16","26S17","26S18","26S19",
-    "26S20","26S21","26S22","26S23",
-    "26S24","26S25","26S26","26S27",
-    "26S28","26S29","26S30","26S31"
-];
-
-const eventGroups={
-    ALL:[
-        "TW1","TW2","TW3","TW4","TW5","TW6",
-        "DW1","DW2","DW3","DW4","WV1",
-        "FW1","FW2","FW3","FW4",
-        "MocoStore","MocoStore1",
-        "MocoStore2","MocoStore3",
-        "TT1","TT2","OT1","OT2","OT3"
-    ],
-    TW:["TW1","TW2","TW3","TW4","TW5","TW6"],
-    DW:["DW1","DW2","DW3","DW4","WV1"],
-    FW:["FW1","FW2","FW3","FW4"],
-    MOCO:["MocoStore","MocoStore1","MocoStore2","MocoStore3"],
-    TT:["TT1","TT2"],
-    ROYALE:["OT1","OT2","OT3"],
-    TOPUP:[],
-    STORE:[]
-};
-
-let globalScanId=0;
-let currentGroup="ALL";
-let foundAssets=new Set();
-let visualFrame=0;
-
-const $=id=>document.getElementById(id);
-
-function buildQueue(){
-
-    const region=$("regionSelect").value;
-    const group=eventGroups[currentGroup]||[];
-    const queue=[];
-    const seen=new Set();
-
-    for(const event of group){
-
-        for(const date of dateCodes){
-
-            for(const suffix of suffixes){
-
-                const fname=
-                    `${event}_${date}_${suffix}`;
-
-                const url=
-                    `https://dl.dir.freefiremobile.com`+
-                    `/common/Local/${region}`+
-                    `/config/${fname}`;
-
-                if(!seen.has(url)){
-
-                    seen.add(url);
-
-                    queue.push({
-                        url,
-                        fname,
-                        region,
-                        type:event
-                    });
-
-                }
-            }
-        }
+    function renderProgress(value) {
+      requestAnimationFrame(() => {
+        progress.textContent = `${value}%`;
+        scanStatus.textContent =
+          value >= 100 ? "QUÉT HOÀN TẤT" : `ĐANG QUÉT ${value}%`;
+      });
     }
 
-    return queue;
-}
-
-
-/*
- * Visual progress:
- * 0 -> 100% in approximately 200ms.
- * This is display progress only.
- */
-
-function fastProgress(scanId){
-
-    cancelAnimationFrame(visualFrame);
-
-    const started=performance.now();
-
-    function frame(now){
-
-        if(scanId!==globalScanId)return;
-
-        const percent=Math.min(
-            100,
-            ((now-started)/200)*100
-        );
-
-        $("pFill").style.width=
-            percent+"%";
-
-        $("statusTxt").innerText=
-            `Scanning... ${Math.floor(percent)}%`;
-
-        if(percent<100){
-
-            visualFrame=
-                requestAnimationFrame(frame);
-
-        }
-
-    }
-
-    visualFrame=
-        requestAnimationFrame(frame);
-}
-
-
-async function scanAPI(queue,scanId){
-
-    const response=await fetch(
-        API_SCAN,
-        {
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
-                urls:queue.map(x=>x.url)
-            })
-        }
-    );
-
-    if(scanId!==globalScanId){
-        return null;
-    }
-
-    if(!response.ok){
-
-        let message="SCAN API ERROR";
-
-        try{
-            const data=await response.json();
-            message=data.message||message;
-        }catch{}
-
-        throw new Error(message);
-    }
-
-    return response.json();
-}
-
-
-async function startEngine(){
-
-    globalScanId++;
-
-    const scanId=globalScanId;
-
-    foundAssets.clear();
-
-    $("scanBtn").disabled=true;
-    $("cancelBtn").style.display="block";
-    $("pBar").style.display="block";
-    $("scanAnim").style.display="flex";
-
-    $("pFill").style.width="0%";
-    $("statusTxt").innerText="Preparing scan...";
-    $("foundCount").innerText="0";
-
-    clearResults();
-
-    const queue=buildQueue();
-
-    $("resultInfo").innerText=
-        `${queue.length} paths`;
-
-    if(!queue.length){
-
-        finishScan(scanId);
-        return;
-    }
-
-    fastProgress(scanId);
-
-    try{
-
-        const data=
-            await scanAPI(queue,scanId);
-
-        if(scanId!==globalScanId)return;
-        if(!data)return;
-
-        const found=
-            Array.isArray(data.results)
-                ?data.results
-                :[];
-
-        for(const result of found){
-
-            if(scanId!==globalScanId)return;
-
-            const original=
-                queue.find(
-                    x=>x.url===result.url
-                );
-
-            if(!original)continue;
-
-            if(foundAssets.has(original.fname)){
-                continue;
-            }
-
-            foundAssets.add(
-                original.fname
-            );
-
-            createCard(original);
-        }
-
-        $("foundCount").innerText=
-            foundAssets.size;
-
-        $("resultInfo").innerText=
-            `${foundAssets.size} assets found`;
-
-        finishScan(scanId);
-
-    }catch(error){
-
-        if(scanId!==globalScanId)return;
-
-        cancelAnimationFrame(
-            visualFrame
-        );
-
-        $("pFill").style.width="100%";
-        $("statusTxt").innerText=
-            "Scan API Error";
-
-        $("scanAnim").style.display="none";
-        $("pBar").style.display="none";
-        $("cancelBtn").style.display="none";
-        $("scanBtn").disabled=false;
-
-        console.error(error);
-    }
-}
-
-
-function finishScan(scanId){
-
-    if(scanId!==globalScanId)return;
-
-    cancelAnimationFrame(
-        visualFrame
-    );
-
-    $("pFill").style.width="100%";
-
-    $("statusTxt").innerHTML=
-        `Scan Complete • ${foundAssets.size} found`;
-
-    $("foundCount").innerText=
-        foundAssets.size;
-
-    $("scanAnim").style.display="none";
-    $("pBar").style.display="none";
-    $("cancelBtn").style.display="none";
-    $("scanBtn").disabled=false;
-}
-
-
-function stopScan(){
-
-    globalScanId++;
-
-    cancelAnimationFrame(
-        visualFrame
-    );
-
-    $("scanAnim").style.display="none";
-    $("pBar").style.display="none";
-    $("cancelBtn").style.display="none";
-    $("scanBtn").disabled=false;
-
-    $("statusTxt").innerText=
-        "Scan stopped";
-}
-
-
-function clearResults(){
-
-    $("resultsGrid").innerHTML=`
-        <div class="empty">
-            <b>No assets found</b>
-            Start a scan to search Free Fire assets.
-        </div>
-    `;
-
-    $("foundCount").innerText="0";
-}
-
-
-function createCard(item){
-
-    const card=
-        document.createElement("article");
-
-    card.className="card";
-
-    const img=
-        document.createElement("img");
-
-    img.src=item.url;
-    img.alt=item.fname;
-    img.loading="lazy";
-    img.referrerPolicy="no-referrer";
-
-    const body=
-        document.createElement("div");
-
-    body.className="cardBody";
-
-    const name=
-        document.createElement("div");
-
-    name.className="name";
-    name.textContent=item.fname;
-
-    const url=
-        document.createElement("div");
-
-    url.className="url";
-    url.textContent=item.url;
-
-    const copy=
-        document.createElement("button");
-
-    copy.className="copy";
-    copy.textContent="COPY URL";
-
-    copy.onclick=async()=>{
-
-        try{
-
-            await navigator.clipboard.writeText(
-                item.url
-            );
-
-            copy.textContent="COPIED";
-
-            setTimeout(
-                ()=>copy.textContent="COPY URL",
-                1000
-            );
-
-        }catch{
-
-            copy.textContent="FAILED";
-
-        }
-    };
-
-    body.append(
-        name,
-        url,
-        copy
-    );
-
-    card.append(
-        img,
-        body
-    );
-
-    const empty=
-        $("resultsGrid").querySelector(".empty");
-
-    if(empty)empty.remove();
-
-    $("resultsGrid").appendChild(card);
-}
-
-
-document
-.querySelectorAll(".filter")
-.forEach(button=>{
-
-    button.addEventListener(
-        "click",
-        ()=>{
-            document
-            .querySelectorAll(".filter")
-            .forEach(x=>x.classList.remove("active"));
-
-            button.classList.add("active");
-
-            currentGroup=
-                button.dataset.group;
-
-            clearResults();
-        }
-    );
-
-});
-
-
-$("searchInput").addEventListener(
-    "input",
-    ()=>{
-        const q=
-            $("searchInput")
-            .value
-            .toLowerCase()
-            .trim();
-
-        document
-        .querySelectorAll(".card")
-        .forEach(card=>{
-            card.style.display=
-                !q||
-                card.innerText
-                .toLowerCase()
-                .includes(q)
-                    ?""
-                    :"none";
+    async function startScan() {
+      if (scanning) return;
+
+      scanning = true;
+      scanBtn.disabled = true;
+      results.innerHTML = "";
+      renderProgress(1);
+
+      try {
+        const response = await fetch("/api/scan", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            timeout: 1200,
+            concurrency: 100
+          })
         });
+
+        if (!response.ok) {
+          throw new Error("API scan lỗi");
+        }
+
+        const data = await response.json();
+
+        if (Array.isArray(data.results)) {
+          results.innerHTML = data.results.map(item => `
+            <div class="result">
+              <b>${escapeHTML(item.url || "")}</b>
+              <span>${escapeHTML(item.status || "")}</span>
+            </div>
+          `).join("");
+        }
+
+        renderProgress(100);
+
+      } catch (error) {
+        console.error(error);
+        scanStatus.textContent = "LỖI KHI QUÉT";
+      } finally {
+        scanning = false;
+        scanBtn.disabled = false;
+      }
     }
-);
 
+    function escapeHTML(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-$("scanBtn").onclick=
-    startEngine;
-
-$("cancelBtn").onclick=
-    stopScan;
-
-
-$("regionSelect").value=
-    localStorage.getItem(
-        "ff_region"
-    )||"IND";
-
-
-$("regionSelect").onchange=()=>{
-    localStorage.setItem(
-        "ff_region",
-        $("regionSelect").value
-    );
-};
-</script>
+    scanBtn.addEventListener("click", startScan);
+  </script>
 
 </body>
 </html>
