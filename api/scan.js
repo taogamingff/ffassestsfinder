@@ -1,8 +1,4 @@
-export default async function handler(req, res) {
-
-    /*
-     * CORS
-     */
+export default async function handler(req,res){
 
     res.setHeader(
         "Access-Control-Allow-Origin",
@@ -19,121 +15,72 @@ export default async function handler(req, res) {
         "Content-Type"
     );
 
-    /*
-     * OPTIONS
-     */
-
-    if(req.method === "OPTIONS"){
+    if(req.method==="OPTIONS"){
         return res.status(200).end();
     }
 
-    /*
-     * Only POST
-     */
-
-    if(req.method !== "POST"){
-
+    if(req.method!=="POST"){
         return res.status(405).json({
             success:false,
             error:"METHOD_NOT_ALLOWED"
         });
-
     }
 
     try{
 
-        const body =
-            req.body || {};
+        const body=req.body||{};
 
-        const urls =
-            Array.isArray(body.urls)
-                ? body.urls
-                : [];
-
-        /*
-         * Validate
-         */
-
-        if(!urls.length){
-
+        if(!Array.isArray(body.urls)){
             return res.status(400).json({
                 success:false,
-                error:"URL_LIST_EMPTY",
-                message:"No URLs supplied"
+                error:"URL_LIST_EMPTY"
             });
-
         }
 
-        /*
-         * Limit URL count
-         *
-         * This prevents an accidental
-         * extremely large request.
-         */
+        const urls=[
+            ...new Set(
+                body.urls
+                .filter(
+                    url=>
+                        typeof url==="string" &&
+                        /^https?:\/\//i.test(url)
+                )
+            )
+        ].slice(0,5000);
 
-        const MAX_URLS = 5000;
+        if(!urls.length){
+            return res.status(400).json({
+                success:false,
+                error:"URL_LIST_EMPTY"
+            });
+        }
 
-        const scanUrls =
-            urls
-            .slice(0, MAX_URLS)
-            .filter(
-                url =>
-                    typeof url === "string" &&
-                    /^https?:\/\//i.test(url)
-            );
+        const MAX_WORKERS=50;
+        const TIMEOUT=1200;
 
-        /*
-         * 50 concurrent workers
-         */
+        const results=
+            new Array(urls.length);
 
-        const MAX_WORKERS = 50;
+        let cursor=0;
 
-        /*
-         * 1.2 seconds timeout
-         */
+        async function check(url){
 
-        const TIMEOUT = 1200;
-
-        const results =
-            new Array(
-                scanUrls.length
-            );
-
-        let cursor = 0;
-
-
-        /*
-         * Check one URL
-         */
-
-        async function checkURL(url){
-
-            const controller =
+            const controller=
                 new AbortController();
 
-            const timer =
+            const timer=
                 setTimeout(
-                    () => {
-                        controller.abort();
-                    },
+                    ()=>controller.abort(),
                     TIMEOUT
                 );
-
-            const started =
-                Date.now();
 
             try{
 
                 let response;
 
-                /*
-                 * HEAD is much cheaper than
-                 * downloading the image.
-                 */
-
                 try{
 
-                    response =
+                    response=
                         await fetch(
                             url,
                             {
@@ -146,15 +93,7 @@ export default async function handler(req, res) {
 
                 }catch{
 
-                    /*
-                     * Some CDNs don't support
-                     * HEAD correctly.
-                     *
-                     * Fall back to GET while
-                     * requesting no body.
-                     */
-
-                    response =
+                    response=
                         await fetch(
                             url,
                             {
@@ -163,174 +102,98 @@ export default async function handler(req, res) {
                                 signal:
                                     controller.signal,
                                 headers:{
-                                    "Range":
-                                        "bytes=0-0"
+                                    Range:"bytes=0-0"
                                 }
                             }
                         );
-
                 }
 
-                const elapsed =
-                    Date.now() -
-                    started;
-
                 return {
-
                     url,
-
-                    found:
-                        response.ok,
-
-                    status:
-                        response.status,
-
-                    elapsed
-
+                    found:response.ok,
+                    status:response.status
                 };
 
             }catch(error){
 
-                const elapsed =
-                    Date.now() -
-                    started;
-
                 return {
-
                     url,
-
                     found:false,
-
                     status:0,
-
-                    elapsed,
-
                     error:
-                        error?.name ===
-                        "AbortError"
-                            ? "TIMEOUT"
-                            : "REQUEST_FAILED"
-
+                        error?.name==="AbortError"
+                            ?"TIMEOUT"
+                            :"REQUEST_FAILED"
                 };
 
             }finally{
 
-                clearTimeout(
-                    timer
-                );
+                clearTimeout(timer);
 
             }
-
         }
 
-
-        /*
-         * Worker
-         */
 
         async function worker(){
 
             while(true){
 
-                const index =
-                    cursor++;
+                const index=cursor++;
 
-                if(
-                    index >=
-                    scanUrls.length
-                ){
+                if(index>=urls.length){
                     return;
                 }
 
-                results[index] =
-                    await checkURL(
-                        scanUrls[index]
+                results[index]=
+                    await check(
+                        urls[index]
                     );
-
             }
-
         }
 
 
-        /*
-         * Start 50 workers
-         */
-
-        const workerCount =
+        const workerCount=
             Math.min(
                 MAX_WORKERS,
-                scanUrls.length
-            );
-
-        const workers =
-            Array.from(
-                {
-                    length:
-                        workerCount
-                },
-                () => worker()
+                urls.length
             );
 
         await Promise.all(
-            workers
+            Array.from(
+                {length:workerCount},
+                worker
+            )
         );
 
 
-        /*
-         * Only return found assets
-         */
-
-        const found =
+        const found=
             results.filter(
-                item =>
-                    item &&
-                    item.found
+                x=>x&&x.found
             );
-
-        /*
-         * Statistics
-         */
-
-        const successCount =
-            found.length;
-
-        const failedCount =
-            results.length -
-            successCount;
-
-
-        /*
-         * Response
-         */
 
         return res.status(200).json({
 
             success:true,
 
-            total:
-                scanUrls.length,
+            total:urls.length,
 
-            found:
-                successCount,
+            found:found.length,
 
             failed:
-                failedCount,
+                urls.length-found.length,
 
-            workers:
-                workerCount,
+            workers:workerCount,
 
-            timeout:
-                TIMEOUT,
+            timeout:TIMEOUT,
 
-            results:
-                found
+            results:found
 
         });
 
     }catch(error){
 
         console.error(
-            "SCAN API ERROR:",
+            "SCAN ERROR",
             error
         );
 
@@ -338,15 +201,12 @@ export default async function handler(req, res) {
 
             success:false,
 
-            error:
-                "SCAN_FAILED",
+            error:"SCAN_FAILED",
 
             message:
-                error?.message ||
-                "Unknown scan error"
+                error?.message||
+                "Unknown error"
 
         });
-
     }
-
 }
