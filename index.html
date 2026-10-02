@@ -131,7 +131,7 @@ function resetColors(){changePrimaryColor("#ff1a40");changeBgColor("#0a0304");do
 function copyKeyword(t,b){navigator.clipboard.writeText(t).then(()=>{b.textContent="COPIED!";setTimeout(()=>b.textContent="COPY",1200)})}
 function copyUpiId(){navigator.clipboard.writeText(document.getElementById("upiIdText").textContent)}
 
-function stopScan(){scanId++;document.getElementById("cancelBtn").style.display="none";document.getElementById("pBar").style.display="none";document.getElementById("scanAnim").style.display="none";document.getElementById("statusTxt").innerHTML="<span style='color:var(--danger)'>Scan Aborted.</span>"}
+function stopScan(){stopVisualProgress();scanId++;document.getElementById("cancelBtn").style.display="none";document.getElementById("pBar").style.display="none";document.getElementById("scanAnim").style.display="none";document.getElementById("statusTxt").innerHTML="<span style='color:var(--danger)'>Scan Aborted.</span>"}
 
 function buildQueue(keywords){
  const q=[],server="https://dl.dir.freefiremobile.com";
@@ -180,9 +180,43 @@ function resetView(){
  document.getElementById("pFill").style.width="0%";
 }
 
+let visualProgressTimer=null;
+let visualProgress=0;
+
+function stopVisualProgress(){
+ if(visualProgressTimer){
+  clearInterval(visualProgressTimer);
+  visualProgressTimer=null;
+ }
+}
+
+function startVisualProgress(){
+ stopVisualProgress();
+ visualProgress=0;
+ const fill=document.getElementById("pFill");
+ const status=document.getElementById("statusTxt");
+ fill.style.width="0%";
+ status.textContent="Scanning... 0%";
+
+ const tick=()=>{
+  visualProgress=Math.min(100,visualProgress+1);
+  requestAnimationFrame(()=>{
+   fill.style.width=visualProgress+"%";
+   status.innerHTML=`<span style="color:#fff;font-weight:700">Scanning...</span> ${visualProgress}%`;
+  });
+  if(visualProgress>=100) stopVisualProgress();
+ };
+
+ visualProgressTimer=setInterval(tick,100);
+}
+
 function setProgress(done,total,found){
  const pct=total?Math.min(100,Math.floor(done*100/total)):0;
- requestAnimationFrame(()=>{document.getElementById("pFill").style.width=pct+"%";document.getElementById("statusTxt").innerHTML=found?`<span style="color:#fff;font-weight:700">Found: ${found}</span> | ${pct}%`:`Scanning... ${pct}%`});
+ requestAnimationFrame(()=>{
+  if(visualProgressTimer) return;
+  document.getElementById("pFill").style.width=pct+"%";
+  document.getElementById("statusTxt").innerHTML=found?`<span style="color:#fff;font-weight:700">Found: ${found}</span> | ${pct}%`:`Scanning... ${pct}%`;
+ });
 }
 
 async function scanBatch(batch,myId,done,total){
@@ -206,6 +240,7 @@ async function startEngine(){
  const keywords=mode==="multi"?raw.split(",").map(x=>x.trim()).filter(Boolean):[raw];
  scanId++;const myId=scanId;foundAssets.clear();resetView();
  document.getElementById("cancelBtn").style.display="flex";document.getElementById("pBar").style.display="block";document.getElementById("scanAnim").style.display="flex";
+ startVisualProgress();
  const queue=buildQueue(keywords),total=queue.length,done={value:0};
  document.getElementById("statusTxt").textContent=`Scanning ${total} paths...`;
  // 100 tasks/request prevents the old 400-at-once browser freeze.
@@ -215,6 +250,7 @@ async function startEngine(){
   await scanBatch(queue.slice(i,i+BATCH),myId,done,total);
  }
  if(myId!==scanId)return;
+ stopVisualProgress();
  document.getElementById("pBar").style.display="none";document.getElementById("cancelBtn").style.display="none";document.getElementById("scanAnim").style.display="none";
  if(foundAssets.size)document.getElementById("statusTxt").innerHTML=`<span style="color:#fff;font-weight:700">Scan Complete! ${foundAssets.size} found.</span>`;
  else{document.getElementById("statusTxt").innerHTML="<span style='color:var(--danger)'>Scan Complete. 0 assets found.</span>";document.getElementById("noData").style.display="block"}
