@@ -3,219 +3,166 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-
-<title>FAWAD Gaming - FF DATAMINER</title>
-
-<meta name="description" content="Free Fire DataMiner scanner">
 <meta name="theme-color" content="#050505">
+<title>FAWAD Gaming (FF DATAMINER)</title>
 
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
-
-html,body{
-    width:100%;
-    min-height:100%;
-}
-
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#050505;color:#fff}
 body{
-    background:
-        radial-gradient(circle at 50% -10%,rgba(255,40,40,.16),transparent 35%),
-        linear-gradient(180deg,#080808,#020202 70%);
-    color:#fff;
     font-family:Arial,Helvetica,sans-serif;
-    overflow-x:hidden;
+    background:
+        radial-gradient(circle at 50% 0%,rgba(255,0,0,.16),transparent 38%),
+        linear-gradient(180deg,#090909,#020202);
 }
-
-button,
-input,
-select{
-    font:inherit;
-}
-
-button{
-    cursor:pointer;
-}
+button,input,select{font:inherit}
+button{cursor:pointer}
 
 .app{
-    width:100%;
-    max-width:1250px;
+    width:min(1250px,100%);
     margin:auto;
-    padding:18px;
+    padding:16px;
 }
 
-/* HEADER */
-
 .header{
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(10,10,10,.88);
-    box-shadow:
-        0 0 35px rgba(255,0,0,.08),
-        inset 0 1px 0 rgba(255,255,255,.03);
+    background:rgba(12,12,12,.92);
+    border:1px solid rgba(255,255,255,.1);
     border-radius:20px;
-    padding:22px;
-    margin-bottom:15px;
+    padding:20px;
+    box-shadow:0 0 35px rgba(255,0,0,.08);
 }
 
 .logo{
     display:flex;
     align-items:center;
-    gap:13px;
+    gap:12px;
 }
 
-.logo-icon{
+.logoIcon{
     width:48px;
     height:48px;
     border-radius:14px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    display:grid;
+    place-items:center;
     background:#e60000;
-    box-shadow:0 0 25px rgba(255,0,0,.4);
-    font-size:23px;
     font-weight:900;
+    box-shadow:0 0 25px rgba(255,0,0,.45);
 }
 
-.logo-text h1{
+h1{
+    margin:0;
     font-size:23px;
-    font-weight:900;
-    letter-spacing:.4px;
 }
 
-.logo-text p{
+.sub{
     margin-top:4px;
-    color:#8d8d8d;
+    color:#777;
     font-size:12px;
 }
 
-/* CONTROLS */
-
 .controls{
     display:grid;
-    grid-template-columns:1fr 180px;
+    grid-template-columns:1fr 170px;
     gap:10px;
-    margin-top:20px;
+    margin-top:18px;
 }
 
-.input,
-.select{
+input,select{
     width:100%;
-    height:48px;
-    border:1px solid rgba(255,255,255,.12);
+    height:46px;
+    padding:0 14px;
+    border-radius:12px;
+    border:1px solid #222;
+    outline:none;
     background:#111;
     color:#fff;
-    border-radius:13px;
-    padding:0 15px;
-    outline:none;
 }
 
-.input:focus,
-.select:focus{
+input:focus,select:focus{
     border-color:#e60000;
-    box-shadow:0 0 0 2px rgba(230,0,0,.1);
 }
-
-/* FILTER */
 
 .filters{
     display:flex;
-    gap:8px;
+    gap:7px;
     overflow-x:auto;
-    padding:14px 0 3px;
+    margin-top:12px;
     scrollbar-width:none;
 }
 
-.filters::-webkit-scrollbar{
-    display:none;
-}
+.filters::-webkit-scrollbar{display:none}
 
 .filter{
     flex:0 0 auto;
-    border:1px solid rgba(255,255,255,.1);
-    background:#101010;
-    color:#aaa;
-    padding:10px 15px;
+    padding:9px 14px;
     border-radius:999px;
-    font-size:13px;
+    background:#111;
+    color:#999;
+    border:1px solid #222;
 }
 
 .filter.active{
-    color:#fff;
     background:#e60000;
     border-color:#e60000;
-    box-shadow:0 0 18px rgba(230,0,0,.25);
+    color:#fff;
 }
-
-/* BUTTONS */
 
 .actions{
     display:flex;
-    gap:9px;
-    margin-top:14px;
+    gap:8px;
+    margin-top:13px;
 }
 
 .btn{
-    height:45px;
-    border-radius:12px;
-    border:1px solid rgba(255,255,255,.12);
+    height:44px;
+    padding:0 18px;
+    border-radius:11px;
+    border:1px solid #222;
     background:#151515;
     color:#fff;
-    padding:0 18px;
     font-weight:800;
 }
 
 .btn.primary{
     background:#e60000;
     border-color:#e60000;
-    box-shadow:0 0 20px rgba(230,0,0,.2);
 }
 
 .btn.stop{
+    display:none;
     background:#fff;
     color:#000;
-    display:none;
 }
 
-/* STATUS */
-
-.status-box{
-    margin-top:15px;
-    padding:14px;
-    border-radius:15px;
-    border:1px solid rgba(255,255,255,.08);
+.status{
+    margin-top:13px;
+    padding:13px;
+    border-radius:13px;
     background:#0d0d0d;
+    border:1px solid #1b1b1b;
 }
 
-.status-row{
+.statusRow{
     display:flex;
     justify-content:space-between;
-    gap:10px;
     align-items:center;
 }
 
-.status-text{
-    font-size:13px;
+#statusTxt{
     color:#aaa;
+    font-size:13px;
 }
 
-.status-count{
-    color:#fff;
+#foundCount{
     font-weight:900;
 }
 
-/* SCAN ANIMATION */
-
 .scan-animation-container{
     display:none;
-    width:100%;
     height:30px;
     position:relative;
     align-items:center;
     justify-content:center;
-    margin-top:6px;
 }
 
 .bouncing-ball{
@@ -223,62 +170,48 @@ button{
     height:8px;
     border-radius:50%;
     background:#e60000;
-    box-shadow:
-        0 0 8px #e60000,
-        0 0 18px rgba(230,0,0,.7);
-    animation:bounceTrack .6s linear infinite alternate;
+    box-shadow:0 0 12px #e60000;
+    animation:bounce .6s infinite alternate;
 }
 
-@keyframes bounceTrack{
-    from{
-        transform:translateX(-70px);
-    }
-    to{
-        transform:translateX(70px);
-    }
+@keyframes bounce{
+    from{transform:translateX(-80px)}
+    to{transform:translateX(80px)}
 }
-
-/* PROGRESS */
 
 .progress-bar{
+    display:none;
     width:100%;
     height:4px;
-    margin-top:5px;
     background:#252525;
     border-radius:99px;
     overflow:hidden;
-    display:none;
 }
 
 .progress-fill{
-    width:0%;
+    width:0;
     height:100%;
     background:#e60000;
-    box-shadow:
-        0 0 10px #e60000,
-        0 0 20px rgba(230,0,0,.6);
-    transition:none;
+    box-shadow:0 0 12px #e60000;
 }
-
-/* GRID */
 
 .results{
-    margin-top:17px;
+    margin-top:18px;
 }
 
-.results-head{
+.resultsHead{
     display:flex;
     justify-content:space-between;
-    align-items:center;
     margin-bottom:12px;
 }
 
-.results-head h2{
+.resultsHead h2{
+    margin:0;
     font-size:17px;
 }
 
-.results-head span{
-    color:#777;
+.resultsHead span{
+    color:#666;
     font-size:12px;
 }
 
@@ -288,136 +221,81 @@ button{
     gap:12px;
 }
 
-/* CARD */
-
 .card{
-    position:relative;
     overflow:hidden;
     background:#0c0c0c;
-    border:1px solid rgba(255,255,255,.09);
-    border-radius:15px;
-    min-width:0;
-    animation:cardIn .18s ease;
+    border:1px solid #191919;
+    border-radius:14px;
 }
 
-@keyframes cardIn{
-    from{
-        opacity:0;
-        transform:translateY(5px);
-    }
-    to{
-        opacity:1;
-        transform:none;
-    }
-}
-
-.card-image{
+.card img{
     display:block;
     width:100%;
     aspect-ratio:16/9;
     object-fit:cover;
-    background:#151515;
+    background:#111;
 }
 
-.card-body{
+.cardBody{
     padding:10px;
 }
 
-.card-name{
-    font-size:13px;
+.name{
+    font-size:12px;
     font-weight:800;
-    white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
+    white-space:nowrap;
 }
 
-.card-url{
+.url{
+    color:#555;
+    font-size:9px;
     margin-top:5px;
-    color:#666;
-    font-size:10px;
-    white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
+    white-space:nowrap;
 }
 
-.card-copy{
+.copy{
     width:100%;
-    margin-top:9px;
-    height:32px;
-    border:1px solid rgba(255,255,255,.1);
-    background:#161616;
+    height:31px;
+    margin-top:8px;
+    border:1px solid #222;
+    background:#151515;
     color:#fff;
     border-radius:8px;
     font-size:11px;
-    font-weight:700;
 }
-
-.card-copy:active{
-    transform:scale(.98);
-}
-
-/* EMPTY */
 
 .empty{
-    border:1px dashed rgba(255,255,255,.1);
-    border-radius:16px;
+    grid-column:1/-1;
     padding:40px 20px;
     text-align:center;
     color:#666;
-    grid-column:1/-1;
+    border:1px dashed #222;
+    border-radius:14px;
 }
 
-.empty strong{
+.empty b{
     display:block;
     color:#aaa;
     margin-bottom:5px;
 }
 
-/* FOOTER */
-
-.footer{
-    padding:25px 0 10px;
-    text-align:center;
-    color:#444;
-    font-size:11px;
+@media(max-width:850px){
+    .grid{grid-template-columns:repeat(3,1fr)}
 }
 
-/* MOBILE */
-
-@media(max-width:900px){
-    .grid{
-        grid-template-columns:repeat(3,1fr);
-    }
+@media(max-width:600px){
+    .app{padding:10px}
+    .controls{grid-template-columns:1fr}
+    .grid{grid-template-columns:repeat(2,1fr);gap:8px}
+    h1{font-size:19px}
 }
 
-@media(max-width:650px){
-    .app{
-        padding:10px;
-    }
-
-    .header{
-        padding:16px;
-        border-radius:16px;
-    }
-
-    .controls{
-        grid-template-columns:1fr;
-    }
-
-    .grid{
-        grid-template-columns:repeat(2,1fr);
-        gap:8px;
-    }
-
-    .logo-text h1{
-        font-size:19px;
-    }
-}
-
-@media(max-width:380px){
-    .grid{
-        grid-template-columns:1fr;
-    }
+@media(max-width:360px){
+    .grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -426,170 +304,91 @@ button{
 
 <div class="app">
 
-    <section class="header">
+<section class="header">
 
-        <div class="logo">
-            <div class="logo-icon">FF</div>
-
-            <div class="logo-text">
-                <h1>FAWAD Gaming</h1>
-                <p>FREE FIRE DATA MINER</p>
-            </div>
+    <div class="logo">
+        <div class="logoIcon">FF</div>
+        <div>
+            <h1>FAWAD Gaming</h1>
+            <div class="sub">FF DATAMINER</div>
         </div>
+    </div>
 
-        <div class="controls">
+    <div class="controls">
+        <input
+            id="searchInput"
+            placeholder="Search asset..."
+            autocomplete="off">
 
-            <input
-                id="searchInput"
-                class="input"
-                type="text"
-                placeholder="Search asset..."
-                autocomplete="off"
-            >
+        <select id="regionSelect">
+            <option value="IND">IND</option>
+            <option value="BD">BD</option>
+            <option value="SG">SG</option>
+            <option value="PK">PK</option>
+            <option value="EU">EU</option>
+            <option value="NA">NA</option>
+        </select>
+    </div>
 
-            <select id="regionSelect" class="select">
-                <option value="IND">IND</option>
-                <option value="BD">BD</option>
-                <option value="SG">SG</option>
-                <option value="PK">PK</option>
-                <option value="EU">EU</option>
-                <option value="NA">NA</option>
-            </select>
+    <div class="filters">
+        <button class="filter active" data-group="ALL">ALL</button>
+        <button class="filter" data-group="TW">TW</button>
+        <button class="filter" data-group="DW">DW</button>
+        <button class="filter" data-group="FW">FW</button>
+        <button class="filter" data-group="MOCO">MOCO</button>
+        <button class="filter" data-group="TT">TT</button>
+        <button class="filter" data-group="ROYALE">ROYALE</button>
+        <button class="filter" data-group="TOPUP">TOPUP</button>
+        <button class="filter" data-group="STORE">STORE</button>
+    </div>
 
-        </div>
+    <div class="actions">
+        <button id="scanBtn" class="btn primary">START SCAN</button>
+        <button id="cancelBtn" class="btn stop">STOP</button>
+    </div>
 
-        <div class="filters">
+    <div class="status">
 
-            <button class="filter active" data-group="ALL">
-                ALL
-            </button>
-
-            <button class="filter" data-group="TW">
-                TW
-            </button>
-
-            <button class="filter" data-group="DW">
-                DW
-            </button>
-
-            <button class="filter" data-group="FW">
-                FW
-            </button>
-
-            <button class="filter" data-group="MOCO">
-                MOCO
-            </button>
-
-            <button class="filter" data-group="TT">
-                TT
-            </button>
-
-            <button class="filter" data-group="ROYALE">
-                ROYALE
-            </button>
-
-            <button class="filter" data-group="TOPUP">
-                TOPUP
-            </button>
-
-            <button class="filter" data-group="STORE">
-                STORE
-            </button>
-
-        </div>
-
-        <div class="actions">
-
-            <button
-                id="scanBtn"
-                class="btn primary"
-                type="button">
-                START SCAN
-            </button>
-
-            <button
-                id="cancelBtn"
-                class="btn stop"
-                type="button">
-                STOP
-            </button>
-
-        </div>
-
-        <div class="status-box">
-
-            <div class="status-row">
-
-                <div
-                    id="statusTxt"
-                    class="status-text">
-                    Ready to scan
-                </div>
-
-                <div
-                    id="foundCount"
-                    class="status-count">
-                    0
-                </div>
-
-            </div>
-
-            <div
-                id="scanAnim"
-                class="scan-animation-container">
-
-                <div class="bouncing-ball"></div>
-
-            </div>
-
-            <div
-                id="pBar"
-                class="progress-bar">
-
-                <div
-                    id="pFill"
-                    class="progress-fill">
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <section class="results">
-
-        <div class="results-head">
-
-            <h2>SCAN RESULTS</h2>
-
-            <span id="resultInfo">
-                0 assets
-            </span>
-
+        <div class="statusRow">
+            <div id="statusTxt">Ready to scan</div>
+            <div id="foundCount">0</div>
         </div>
 
         <div
-            id="resultsGrid"
-            class="grid">
-
-            <div class="empty">
-
-                <strong>No assets found</strong>
-
-                Start a scan to search Free Fire assets.
-
-            </div>
-
+            id="scanAnim"
+            class="scan-animation-container">
+            <div class="bouncing-ball"></div>
         </div>
 
-    </section>
+        <div
+            id="pBar"
+            class="progress-bar">
+            <div
+                id="pFill"
+                class="progress-fill">
+            </div>
+        </div>
 
-
-    <div class="footer">
-        FAWAD Gaming • FF DATAMINER
     </div>
+
+</section>
+
+
+<section class="results">
+
+    <div class="resultsHead">
+        <h2>SCAN RESULTS</h2>
+        <span id="resultInfo">0 assets</span>
+    </div>
+
+    <div id="resultsGrid" class="grid">
+        <div class="empty">
+            <b>No assets found</b>
+            Start a scan to search Free Fire assets.
+        </div>
+    </div>
+
+</section>
 
 </div>
 
@@ -597,592 +396,225 @@ button{
 <script>
 "use strict";
 
-/* =========================================================
-   CONFIG
-========================================================= */
+const API_SCAN="/api/scan";
 
-const API_SCAN = "/api/scan";
-
-const regions = [
-    "IND",
-    "BD",
-    "SG",
-    "PK",
-    "EU",
-    "NA"
+const regions=[
+    "IND","BD","SG","PK","EU","NA"
 ];
 
-const suffixes = [
+const suffixes=[
     "en.jpg",
     "en.png",
     "ru.jpg"
 ];
 
-const configPath =
-    "/common/Local/IND/config/";
-
-const splashPath =
-    "/common/Local/BD/Splashanno/";
-
-const dateCodes = [
-    "26S16",
-    "26S17",
-    "26S18",
-    "26S19",
-    "26S20",
-    "26S21",
-    "26S22",
-    "26S23",
-    "26S24",
-    "26S25",
-    "26S26",
-    "26S27",
-    "26S28",
-    "26S29",
-    "26S30",
-    "26S31"
+const dateCodes=[
+    "26S16","26S17","26S18","26S19",
+    "26S20","26S21","26S22","26S23",
+    "26S24","26S25","26S26","26S27",
+    "26S28","26S29","26S30","26S31"
 ];
 
-const eventGroups = {
-
-    ALL: [
-        "TW1",
-        "TW2",
-        "TW3",
-        "TW4",
-        "TW5",
-        "TW6",
-        "DW1",
-        "DW2",
-        "DW3",
-        "DW4",
-        "WV1",
-        "FW1",
-        "FW2",
-        "FW3",
-        "FW4",
-        "MocoStore",
-        "MocoStore1",
-        "MocoStore2",
-        "MocoStore3",
-        "TT1",
-        "TT2",
-        "OT1",
-        "OT2",
-        "OT3"
+const eventGroups={
+    ALL:[
+        "TW1","TW2","TW3","TW4","TW5","TW6",
+        "DW1","DW2","DW3","DW4","WV1",
+        "FW1","FW2","FW3","FW4",
+        "MocoStore","MocoStore1",
+        "MocoStore2","MocoStore3",
+        "TT1","TT2","OT1","OT2","OT3"
     ],
-
-    TW: [
-        "TW1",
-        "TW2",
-        "TW3",
-        "TW4",
-        "TW5",
-        "TW6"
-    ],
-
-    DW: [
-        "DW1",
-        "DW2",
-        "DW3",
-        "DW4",
-        "WV1"
-    ],
-
-    FW: [
-        "FW1",
-        "FW2",
-        "FW3",
-        "FW4"
-    ],
-
-    MOCO: [
-        "MocoStore",
-        "MocoStore1",
-        "MocoStore2",
-        "MocoStore3"
-    ],
-
-    TT: [
-        "TT1",
-        "TT2"
-    ],
-
-    ROYALE: [
-        "OT1",
-        "OT2",
-        "OT3"
-    ],
-
-    TOPUP: [],
-
-    STORE: []
+    TW:["TW1","TW2","TW3","TW4","TW5","TW6"],
+    DW:["DW1","DW2","DW3","DW4","WV1"],
+    FW:["FW1","FW2","FW3","FW4"],
+    MOCO:["MocoStore","MocoStore1","MocoStore2","MocoStore3"],
+    TT:["TT1","TT2"],
+    ROYALE:["OT1","OT2","OT3"],
+    TOPUP:[],
+    STORE:[]
 };
 
+let globalScanId=0;
+let currentGroup="ALL";
+let foundAssets=new Set();
+let visualFrame=0;
 
-/* =========================================================
-   STATE
-========================================================= */
+const $=id=>document.getElementById(id);
 
-let globalScanId = 0;
+function buildQueue(){
 
-let foundAssets = new Set();
+    const region=$("regionSelect").value;
+    const group=eventGroups[currentGroup]||[];
+    const queue=[];
+    const seen=new Set();
 
-let totalItems = 0;
-
-let processedItems = 0;
-
-let currentGroup = "ALL";
-
-let currentQueue = [];
-
-let currentResults = [];
-
-let visualFrame = null;
-
-
-/* =========================================================
-   DOM
-========================================================= */
-
-const scanBtn =
-    document.getElementById("scanBtn");
-
-const cancelBtn =
-    document.getElementById("cancelBtn");
-
-const statusTxt =
-    document.getElementById("statusTxt");
-
-const foundCount =
-    document.getElementById("foundCount");
-
-const resultInfo =
-    document.getElementById("resultInfo");
-
-const pBar =
-    document.getElementById("pBar");
-
-const pFill =
-    document.getElementById("pFill");
-
-const scanAnim =
-    document.getElementById("scanAnim");
-
-const resultsGrid =
-    document.getElementById("resultsGrid");
-
-const searchInput =
-    document.getElementById("searchInput");
-
-const regionSelect =
-    document.getElementById("regionSelect");
-
-
-/* =========================================================
-   FILTER
-========================================================= */
-
-document
-.querySelectorAll(".filter")
-.forEach(button => {
-
-    button.addEventListener("click", () => {
-
-        document
-        .querySelectorAll(".filter")
-        .forEach(btn => {
-            btn.classList.remove("active");
-        });
-
-        button.classList.add("active");
-
-        currentGroup =
-            button.dataset.group;
-
-        clearResults();
-    });
-
-});
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-searchInput.addEventListener(
-    "input",
-    filterCards
-);
-
-
-function filterCards(){
-
-    const keyword =
-        searchInput.value
-        .trim()
-        .toLowerCase();
-
-    const cards =
-        document.querySelectorAll(
-            ".card"
-        );
-
-    cards.forEach(card => {
-
-        const text =
-            card.innerText
-            .toLowerCase();
-
-        card.style.display =
-            !keyword ||
-            text.includes(keyword)
-                ? ""
-                : "none";
-
-    });
-
-}
-
-
-/* =========================================================
-   BUILD SCAN QUEUE
-========================================================= */
-
-function buildScanQueue(){
-
-    const region =
-        regionSelect.value;
-
-    const groupItems =
-        eventGroups[currentGroup] || [];
-
-    const queue = [];
-
-    /*
-       Các mẫu đường dẫn được tạo ở đây.
-       API sẽ nhận URL thật và kiểm tra.
-    */
-
-    for(const eventName of groupItems){
+    for(const event of group){
 
         for(const date of dateCodes){
 
             for(const suffix of suffixes){
 
-                const filename =
-                    `${eventName}_${date}_${suffix}`;
+                const fname=
+                    `${event}_${date}_${suffix}`;
 
-                const url =
-                    `https://dl.dir.freefiremobile.com` +
-                    `/common/Local/${region}` +
-                    `/config/${filename}`;
+                const url=
+                    `https://dl.dir.freefiremobile.com`+
+                    `/common/Local/${region}`+
+                    `/config/${fname}`;
 
-                queue.push({
-                    url,
-                    fname:filename,
-                    region,
-                    type:eventName
-                });
+                if(!seen.has(url)){
 
+                    seen.add(url);
+
+                    queue.push({
+                        url,
+                        fname,
+                        region,
+                        type:event
+                    });
+
+                }
             }
-
         }
-
     }
 
-    /*
-       Splash assets
-    */
-
-    for(const date of dateCodes){
-
-        for(const suffix of suffixes){
-
-            const filename =
-                `Splash_${date}_${suffix}`;
-
-            const url =
-                `https://dl.dir.freefiremobile.com` +
-                `/common/Local/${region}` +
-                `/Splashanno/${filename}`;
-
-            queue.push({
-                url,
-                fname:filename,
-                region,
-                type:"SPLASH"
-            });
-
-        }
-
-    }
-
-    /*
-       Remove duplicate URLs
-    */
-
-    const seen =
-        new Set();
-
-    return queue.filter(item => {
-
-        if(seen.has(item.url)){
-            return false;
-        }
-
-        seen.add(item.url);
-
-        return true;
-
-    });
-
+    return queue;
 }
 
 
-/* =========================================================
-   FAST VISUAL PROGRESS
-========================================================= */
+/*
+ * Visual progress:
+ * 0 -> 100% in approximately 200ms.
+ * This is display progress only.
+ */
 
-function startVisualProgress(scanId){
+function fastProgress(scanId){
 
-    cancelAnimationFrame(
-        visualFrame
-    );
+    cancelAnimationFrame(visualFrame);
 
-    const started =
-        performance.now();
+    const started=performance.now();
 
     function frame(now){
 
-        if(scanId !== globalScanId){
-            return;
-        }
+        if(scanId!==globalScanId)return;
 
-        const percent =
-            Math.min(
-                100,
-                ((now - started) / 200) * 100
-            );
+        const percent=Math.min(
+            100,
+            ((now-started)/200)*100
+        );
 
-        pFill.style.width =
-            `${percent}%`;
+        $("pFill").style.width=
+            percent+"%";
 
-        statusTxt.innerText =
+        $("statusTxt").innerText=
             `Scanning... ${Math.floor(percent)}%`;
 
-        if(percent < 100){
+        if(percent<100){
 
-            visualFrame =
+            visualFrame=
                 requestAnimationFrame(frame);
-
-        }else{
-
-            pFill.style.width =
-                "100%";
-
-            statusTxt.innerText =
-                "Scanning... 100%";
 
         }
 
     }
 
-    visualFrame =
+    visualFrame=
         requestAnimationFrame(frame);
 }
 
 
-/* =========================================================
-   API SCAN
-========================================================= */
+async function scanAPI(queue,scanId){
 
-async function scanByAPI(
-    queue,
-    scanId
-){
+    const response=await fetch(
+        API_SCAN,
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                urls:queue.map(x=>x.url)
+            })
+        }
+    );
 
-    const urls =
-        queue.map(item => item.url);
-
-    const response =
-        await fetch(
-            API_SCAN,
-            {
-                method:"POST",
-
-                headers:{
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:JSON.stringify({
-                    urls
-                })
-            }
-        );
-
-    if(scanId !== globalScanId){
+    if(scanId!==globalScanId){
         return null;
     }
 
     if(!response.ok){
 
-        let message =
-            "SCAN API ERROR";
+        let message="SCAN API ERROR";
 
         try{
-
-            const error =
-                await response.json();
-
-            if(error.message){
-                message =
-                    error.message;
-            }
-
+            const data=await response.json();
+            message=data.message||message;
         }catch{}
 
         throw new Error(message);
     }
 
-    return await response.json();
+    return response.json();
 }
 
-
-/* =========================================================
-   START ENGINE
-========================================================= */
 
 async function startEngine(){
 
     globalScanId++;
 
-    const myScanId =
-        globalScanId;
+    const scanId=globalScanId;
 
     foundAssets.clear();
 
-    currentResults = [];
+    $("scanBtn").disabled=true;
+    $("cancelBtn").style.display="block";
+    $("pBar").style.display="block";
+    $("scanAnim").style.display="flex";
+
+    $("pFill").style.width="0%";
+    $("statusTxt").innerText="Preparing scan...";
+    $("foundCount").innerText="0";
 
     clearResults();
 
-    processedItems = 0;
+    const queue=buildQueue();
 
-    totalItems = 0;
+    $("resultInfo").innerText=
+        `${queue.length} paths`;
 
-    scanBtn.disabled = true;
+    if(!queue.length){
 
-    cancelBtn.style.display =
-        "block";
-
-    pBar.style.display =
-        "block";
-
-    scanAnim.style.display =
-        "flex";
-
-    pFill.style.width =
-        "0%";
-
-    statusTxt.innerText =
-        "Preparing scan...";
-
-    foundCount.innerText =
-        "0";
-
-    /*
-       Create queue
-    */
-
-    const queue =
-        buildScanQueue();
-
-    currentQueue =
-        queue;
-
-    totalItems =
-        queue.length;
-
-    resultInfo.innerText =
-        `${totalItems} paths`;
-
-    if(!totalItems){
-
-        finishScan(
-            myScanId,
-            "No scan paths"
-        );
-
+        finishScan(scanId);
         return;
     }
 
-    /*
-       Visual progress is intentionally
-       separated from real network scanning.
-    */
-
-    startVisualProgress(
-        myScanId
-    );
-
-    /*
-       Real API scan
-    */
+    fastProgress(scanId);
 
     try{
 
-        const data =
-            await scanByAPI(
-                queue,
-                myScanId
-            );
+        const data=
+            await scanAPI(queue,scanId);
 
-        if(
-            myScanId !==
-            globalScanId
-        ){
-            return;
-        }
+        if(scanId!==globalScanId)return;
+        if(!data)return;
 
-        if(!data){
-            return;
-        }
-
-        /*
-           Process actual results
-        */
-
-        const found =
+        const found=
             Array.isArray(data.results)
-                ? data.results
-                : [];
-
-        currentResults =
-            found;
+                ?data.results
+                :[];
 
         for(const result of found){
 
-            if(
-                myScanId !==
-                globalScanId
-            ){
-                return;
-            }
+            if(scanId!==globalScanId)return;
 
-            const original =
+            const original=
                 queue.find(
-                    item =>
-                        item.url ===
-                        result.url
+                    x=>x.url===result.url
                 );
 
-            if(
-                !original ||
-                foundAssets.has(
-                    original.fname
-                )
-            ){
+            if(!original)continue;
+
+            if(foundAssets.has(original.fname)){
                 continue;
             }
 
@@ -1190,123 +622,61 @@ async function startEngine(){
                 original.fname
             );
 
-            createCard(
-                original
-            );
-
+            createCard(original);
         }
 
-        processedItems =
-            totalItems;
-
-        foundCount.innerText =
+        $("foundCount").innerText=
             foundAssets.size;
 
-        resultInfo.innerText =
+        $("resultInfo").innerText=
             `${foundAssets.size} assets found`;
 
-        finishScan(
-            myScanId
-        );
+        finishScan(scanId);
 
     }catch(error){
 
-        if(
-            myScanId !==
-            globalScanId
-        ){
-            return;
-        }
-
-        console.error(
-            "SCAN ERROR:",
-            error
-        );
+        if(scanId!==globalScanId)return;
 
         cancelAnimationFrame(
             visualFrame
         );
 
-        pFill.style.width =
-            "100%";
-
-        statusTxt.innerText =
+        $("pFill").style.width="100%";
+        $("statusTxt").innerText=
             "Scan API Error";
 
-        scanAnim.style.display =
-            "none";
+        $("scanAnim").style.display="none";
+        $("pBar").style.display="none";
+        $("cancelBtn").style.display="none";
+        $("scanBtn").disabled=false;
 
-        cancelBtn.style.display =
-            "none";
-
-        scanBtn.disabled =
-            false;
-
+        console.error(error);
     }
-
 }
 
 
-/* =========================================================
-   FINISH
-========================================================= */
+function finishScan(scanId){
 
-function finishScan(
-    scanId,
-    customMessage
-){
-
-    if(scanId !== globalScanId){
-        return;
-    }
+    if(scanId!==globalScanId)return;
 
     cancelAnimationFrame(
         visualFrame
     );
 
-    pFill.style.width =
-        "100%";
+    $("pFill").style.width="100%";
 
-    const count =
+    $("statusTxt").innerHTML=
+        `Scan Complete • ${foundAssets.size} found`;
+
+    $("foundCount").innerText=
         foundAssets.size;
 
-    if(customMessage){
-
-        statusTxt.innerText =
-            customMessage;
-
-    }else{
-
-        statusTxt.innerHTML =
-            `<span style="color:#fff;font-weight:800;">
-                Scan Complete
-            </span>
-            &nbsp;•&nbsp;
-            ${count} found`;
-
-    }
-
-    foundCount.innerText =
-        count;
-
-    scanAnim.style.display =
-        "none";
-
-    pBar.style.display =
-        "none";
-
-    cancelBtn.style.display =
-        "none";
-
-    scanBtn.disabled =
-        false;
-
+    $("scanAnim").style.display="none";
+    $("pBar").style.display="none";
+    $("cancelBtn").style.display="none";
+    $("scanBtn").disabled=false;
 }
 
-
-/* =========================================================
-   STOP
-========================================================= */
 
 function stopScan(){
 
@@ -1316,230 +686,176 @@ function stopScan(){
         visualFrame
     );
 
-    scanAnim.style.display =
-        "none";
+    $("scanAnim").style.display="none";
+    $("pBar").style.display="none";
+    $("cancelBtn").style.display="none";
+    $("scanBtn").disabled=false;
 
-    pBar.style.display =
-        "none";
-
-    cancelBtn.style.display =
-        "none";
-
-    scanBtn.disabled =
-        false;
-
-    statusTxt.innerText =
+    $("statusTxt").innerText=
         "Scan stopped";
-
 }
 
-
-/* =========================================================
-   CLEAR
-========================================================= */
 
 function clearResults(){
 
-    foundAssets.clear();
-
-    currentResults = [];
-
-    resultsGrid.innerHTML =
-        `
+    $("resultsGrid").innerHTML=`
         <div class="empty">
-            <strong>No assets found</strong>
+            <b>No assets found</b>
             Start a scan to search Free Fire assets.
-        </div>
-        `;
-
-    foundCount.innerText =
-        "0";
-
-    resultInfo.innerText =
-        "0 assets";
-
-}
-
-
-/* =========================================================
-   CREATE CARD
-========================================================= */
-
-function createCard(item){
-
-    const card =
-        document.createElement(
-            "article"
-        );
-
-    card.className =
-        "card";
-
-    card.dataset.name =
-        item.fname;
-
-    card.innerHTML = `
-        <img
-            class="card-image"
-            src="${escapeAttribute(item.url)}"
-            alt="${escapeAttribute(item.fname)}"
-            loading="lazy"
-            referrerpolicy="no-referrer"
-        >
-
-        <div class="card-body">
-
-            <div class="card-name">
-                ${escapeHTML(item.fname)}
-            </div>
-
-            <div class="card-url">
-                ${escapeHTML(item.url)}
-            </div>
-
-            <button
-                class="card-copy"
-                type="button">
-                COPY URL
-            </button>
-
         </div>
     `;
 
-    const copyButton =
-        card.querySelector(
-            ".card-copy"
-        );
+    $("foundCount").innerText="0";
+}
 
-    copyButton.addEventListener(
+
+function createCard(item){
+
+    const card=
+        document.createElement("article");
+
+    card.className="card";
+
+    const img=
+        document.createElement("img");
+
+    img.src=item.url;
+    img.alt=item.fname;
+    img.loading="lazy";
+    img.referrerPolicy="no-referrer";
+
+    const body=
+        document.createElement("div");
+
+    body.className="cardBody";
+
+    const name=
+        document.createElement("div");
+
+    name.className="name";
+    name.textContent=item.fname;
+
+    const url=
+        document.createElement("div");
+
+    url.className="url";
+    url.textContent=item.url;
+
+    const copy=
+        document.createElement("button");
+
+    copy.className="copy";
+    copy.textContent="COPY URL";
+
+    copy.onclick=async()=>{
+
+        try{
+
+            await navigator.clipboard.writeText(
+                item.url
+            );
+
+            copy.textContent="COPIED";
+
+            setTimeout(
+                ()=>copy.textContent="COPY URL",
+                1000
+            );
+
+        }catch{
+
+            copy.textContent="FAILED";
+
+        }
+    };
+
+    body.append(
+        name,
+        url,
+        copy
+    );
+
+    card.append(
+        img,
+        body
+    );
+
+    const empty=
+        $("resultsGrid").querySelector(".empty");
+
+    if(empty)empty.remove();
+
+    $("resultsGrid").appendChild(card);
+}
+
+
+document
+.querySelectorAll(".filter")
+.forEach(button=>{
+
+    button.addEventListener(
         "click",
-        async () => {
+        ()=>{
+            document
+            .querySelectorAll(".filter")
+            .forEach(x=>x.classList.remove("active"));
 
-            try{
+            button.classList.add("active");
 
-                await navigator.clipboard.writeText(
-                    item.url
-                );
+            currentGroup=
+                button.dataset.group;
 
-                copyButton.innerText =
-                    "COPIED";
-
-                setTimeout(() => {
-
-                    copyButton.innerText =
-                        "COPY URL";
-
-                },1000);
-
-            }catch{
-
-                copyButton.innerText =
-                    "COPY FAILED";
-
-            }
-
+            clearResults();
         }
     );
 
-    /*
-       Replace empty state
-    */
-
-    const empty =
-        resultsGrid.querySelector(
-            ".empty"
-        );
-
-    if(empty){
-        empty.remove();
-    }
-
-    resultsGrid.appendChild(
-        card
-    );
-
-}
+});
 
 
-/* =========================================================
-   ESCAPE
-========================================================= */
+$("searchInput").addEventListener(
+    "input",
+    ()=>{
+        const q=
+            $("searchInput")
+            .value
+            .toLowerCase()
+            .trim();
 
-function escapeHTML(value){
-
-    return String(value)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-
-}
-
-function escapeAttribute(value){
-
-    return escapeHTML(value);
-
-}
-
-
-/* =========================================================
-   EVENTS
-========================================================= */
-
-scanBtn.addEventListener(
-    "click",
-    startEngine
-);
-
-cancelBtn.addEventListener(
-    "click",
-    stopScan
-);
-
-
-/* =========================================================
-   KEYBOARD
-========================================================= */
-
-searchInput.addEventListener(
-    "keydown",
-    event => {
-
-        if(event.key === "Enter"){
-
-            event.preventDefault();
-
-            startEngine();
-
-        }
-
+        document
+        .querySelectorAll(".card")
+        .forEach(card=>{
+            card.style.display=
+                !q||
+                card.innerText
+                .toLowerCase()
+                .includes(q)
+                    ?""
+                    :"none";
+        });
     }
 );
 
 
-/* =========================================================
-   INIT
-========================================================= */
+$("scanBtn").onclick=
+    startEngine;
 
-regionSelect.value =
+$("cancelBtn").onclick=
+    stopScan;
+
+
+$("regionSelect").value=
     localStorage.getItem(
-        "ff_scan_region"
-    ) || "IND";
+        "ff_region"
+    )||"IND";
 
-regionSelect.addEventListener(
-    "change",
-    () => {
 
-        localStorage.setItem(
-            "ff_scan_region",
-            regionSelect.value
-        );
-
-    }
-);
-
+$("regionSelect").onchange=()=>{
+    localStorage.setItem(
+        "ff_region",
+        $("regionSelect").value
+    );
+};
 </script>
 
 </body>
-      </html>
+</html>
